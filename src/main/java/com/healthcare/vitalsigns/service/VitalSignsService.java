@@ -1,5 +1,6 @@
 package com.healthcare.vitalsigns.service;
 
+import com.healthcare.vitalsigns.annotation.ExecutionTime;
 import com.healthcare.vitalsigns.dto.VitalSignsDTO;
 import com.healthcare.vitalsigns.entity.VitalSigns;
 import com.healthcare.vitalsigns.mapper.VitalSignsMapper;
@@ -48,6 +49,7 @@ public class VitalSignsService {
                 .orElseThrow(() -> new EntityNotFoundException("VitalSigns not found with id: " + id));
     }
 
+    @ExecutionTime
     @Transactional(readOnly = true)
     public List<VitalSignsDTO> findByPatientId(String patientId) {
         return repository.findByPatientIdOrderByCreatedDesc(patientId)
