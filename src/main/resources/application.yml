@@ -10,6 +10,14 @@ spring:
         health-check-path: /actuator/health
         health-check-interval: 10s
         service-name: sign-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: audit-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 
 management:
   endpoints:
