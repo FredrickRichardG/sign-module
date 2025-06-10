@@ -1,6 +1,7 @@
 package com.healthcare.vitalsigns.service;
 
 import com.healthcare.vitalsigns.annotation.ExecutionTime;
+import com.healthcare.vitalsigns.config.KafkaAuditPublisher;
 import com.healthcare.vitalsigns.dto.VitalSignsDTO;
 import com.healthcare.vitalsigns.entity.VitalSigns;
 import com.healthcare.vitalsigns.mapper.VitalSignsMapper;
@@ -23,6 +24,7 @@ public class VitalSignsService {
 
     private final VitalSignsRepository repository;
     private final VitalSignsMapper mapper;
+    private final KafkaAuditPublisher kafkaAuditPublisher;
 
     @CachePut(value = "VITAL_CACHE",key = "#result.id")
     public VitalSignsDTO create(VitalSignsDTO vitalSignsDTO) {
@@ -35,9 +37,10 @@ public class VitalSignsService {
     public VitalSignsDTO update(Long id, VitalSignsDTO vitalSignsDTO) {
         VitalSigns entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("VitalSigns not found with id: " + id));
-        
+        kafkaAuditPublisher.publish("VitalSigns",id.toString(),"UPDATE",entity,vitalSignsDTO,"system-user");
         mapper.updateEntityFromDTO(vitalSignsDTO, entity);
         entity = repository.save(entity);
+
         return mapper.toDTO(entity);
     }
 
